@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TargetIn | SEO Todo List</title>
+    <meta
+      name="description"
+      content="TargetIn is an elegant SEO todo list app to organize keyword research, content planning, technical SEO, and link building."
+    />
+
+    <style>
+      :root {
+        --bg: #0f0d09;
+        --bg-soft: #17130d;
+        --card: rgba(30, 24, 16, 0.88);
+        --card-strong: rgba(37, 29, 19, 0.96);
+        --line: rgba(212, 175, 55, 0.18);
+        --text: #f8f1dc;
+        --muted: #c7b98a;
+        --gold: #d4af37;
+        --gold-soft: #f2d777;
+        --gold-deep: #8a6a19;
+        --success: #88c999;
+        --danger: #f08e7b;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Segoe UI', 'SF Pro Display', system-ui, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(212, 175, 55, 0.18),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at right center,
+            rgba(242, 215, 119, 0.08),
+            transparent 28%
+          ),
+          linear-gradient(135deg, #0b0906 0%, #15110a 45%, #0d0a05 100%);
+        padding: 32px 18px 60px;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px
+          );
+        background-size: 32px 32px;
+        mask-image: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.7),
+          transparent 95%
+        );
+      }
+
+      .app-shell {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        gap: 22px;
+      }
+
+      .hero,
+      .board {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+      }
+
+      .hero {
+        padding: 28px;
+        display: grid;
+        gap: 28px;
+        overflow: hidden;
+      }
+
+      .hero-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .logo {
+        width: 62px;
+        height: 62px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(
+          circle at 30% 30%,
+          #ffe39b,
+          #d4af37 55%,
+          #7b5b12 100%
+        );
+        color: #211705;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.35),
+          0 14px 28px rgba(212, 175, 55, 0.22);
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .eyebrow {
+        margin: 0 0 6px;
+        color: var(--gold-soft);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 4vw, 4.2rem);
+        line-height: 0.96;
+        letter-spacing: -0.04em;
+      }
+
+      .hero p {
+        margin: 12px 0 0;
+        max-width: 680px;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        min-width: min(100%, 360px);
+      }
+
+      .stat {
+        padding: 18px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(212, 175, 55, 0.12);
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 1.6rem;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+        gap: 18px;
+      }
+
+      .panel {
+        background: var(--card-strong);
+        border-radius: 24px;
+        border: 1px solid rgba(212, 175, 55, 0.12);
+        padding: 22px;
+      }
+
+      .panel h2,
+      .panel h3 {
+        margin: 0;
+      }
+
+      .progress-wrap {
+        display: grid;
+        gap: 12px;
+      }
+
+      .progress-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .progress-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      .progress-copy {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .progress-bar {
+        height: 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+        border: 1px solid rgba(212, 175, 55, 0.08);
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(
+          90deg,
+          #8a6a19 0%,
+          #d4af37 45%,
+          #f8e49c 100%
+        );
+        transition: width 0.28s ease;
+      }
+
+      .template-list,
+      .focus-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .template-item,
+      .focus-item {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(212, 175, 55, 0.12);
+      }
+
+      .template-item strong,
+      .focus-item strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .template-item span,
+      .focus-item span {
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.55;
+      }
+
+      .board {
+        padding: 28px;
+      }
+
+      .board-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 20px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .board-head p {
+        margin: 8px 0 0;
+        color: var(--muted);
+      }
+
+      .input-cluster {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) 200px auto;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .section-cluster {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      input,
+      select,
+      button {
+        border: none;
+        border-radius: 16px;
+        min-height: 52px;
+        font: inherit;
+      }
+
+      input,
+      select {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        color: var(--text);
+        padding: 0 16px;
+        outline: none;
+      }
+
+      input::placeholder {
+        color: #a69666;
+      }
+
+      select {
+        appearance: none;
+      }
+
+      button {
+        padding: 0 18px;
+        cursor: pointer;
+        transition:
+          transform 0.18s ease,
+          opacity 0.18s ease,
+          background 0.18s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #f0d57c, #d4af37 55%, #8a6a19);
+        color: #221805;
+        font-weight: 700;
+        box-shadow: 0 12px 26px rgba(212, 175, 55, 0.2);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        border: 1px solid rgba(212, 175, 55, 0.14);
+      }
+
+      .kanban {
+        display: grid;
+        gap: 16px;
+      }
+
+      .section {
+        border: 1px solid rgba(212, 175, 55, 0.12);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.02);
+        overflow: hidden;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 20px;
+        cursor: pointer;
+        background: linear-gradient(
+          180deg,
+          rgba(212, 175, 55, 0.06),
+          rgba(212, 175, 55, 0.02)
+        );
+      }
+
+      .section-meta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+      }
+
+      .section-badge {
+        min-width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(212, 175, 55, 0.12);
+        color: var(--gold-soft);
+        font-weight: 700;
+      }
+
+      .section-title strong {
+        display: block;
+        font-size: 1rem;
+      }
+
+      .section-title span {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: 0.2s ease;
+      }
+
+      .section:hover .actions,
+      .task:hover .actions {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .icon-btn {
+        min-height: 40px;
+        width: 40px;
+        padding: 0;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+      }
+
+      .task-list {
+        padding: 0 18px 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .task {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 20px;
+        background: rgba(11, 9, 6, 0.5);
+        border: 1px solid rgba(212, 175, 55, 0.08);
+      }
+
+      .task-main {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .task-check {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid rgba(212, 175, 55, 0.5);
+        display: inline-grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+
+      .task.done .task-check {
+        background: linear-gradient(135deg, #d4af37, #f7e59b);
+        border-color: transparent;
+        color: #221805;
+      }
+
+      .task-text {
+        cursor: pointer;
+      }
+
+      .task-text strong {
+        display: block;
+        font-size: 0.98rem;
+        font-weight: 600;
+      }
+
+      .task-text span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .task.done .task-text strong,
+      .task.done .task-text span {
+        text-decoration: line-through;
+        opacity: 0.62;
+      }
+
+      .empty {
+        padding: 18px;
+        border-radius: 18px;
+        color: var(--muted);
+        text-align: center;
+        border: 1px dashed rgba(212, 175, 55, 0.16);
+      }
+
+      @media (max-width: 920px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-stats {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 18px 14px 40px;
+        }
+
+        .hero,
+        .board {
+          padding: 20px;
+          border-radius: 22px;
+        }
+
+        .hero-stats,
+        .input-cluster,
+        .section-cluster {
+          grid-template-columns: 1fr;
+        }
+
+        .section-header,
+        .task {
+          align-items: flex-start;
+        }
+
+        .actions {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="brand">
+              <div class="logo">TI</div>
+              <div>
+                <p class="eyebrow">Gold SEO Workflow</p>
+                <h1>TargetIn</h1>
+              </div>
+            </div>
+            <p>
+              Elegant SEO todo list untuk keyword planning, content execution,
+              technical fixes, dan backlink outreach. Semua target campaign
+              tersusun rapi dalam satu dashboard modern.
+            </p>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat">
+              <strong id="statSections">0</strong>
+              <span>SEO sections</span>
+            </div>
+            <div class="stat">
+              <strong id="statTasks">0</strong>
+              <span>Total todos</span>
+            </div>
+            <div class="stat">
+              <strong id="statDone">0%</strong>
+              <span>Completion</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-grid">
+          <div class="panel">
+            <div class="progress-wrap">
+              <div class="progress-head">
+                <div>
+                  <div class="progress-title">SEO Campaign Progress</div>
+                  <div class="progress-copy">
+                    Track how much of your SEO checklist is already completed.
+                  </div>
+                </div>
+                <strong id="progressLabel">0%</strong>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+              </div>
+            </div>
+
+            <div class="template-list">
+              <div class="template-item">
+                <strong>SEO Todo List Template</strong>
+                <span
+                  >Keyword mapping, content brief, on-page optimization, schema,
+                  and link building tasks in one flow.</span
+                >
+              </div>
+              <div class="template-item">
+                <strong>Weekly SEO Sprint</strong>
+                <span
+                  >Ideal untuk monitoring ranking, updating content, fixing
+                  crawl issues, dan reviewing internal links.</span
+                >
+              </div>
+              <div class="template-item">
+                <strong>SEO Launch Checklist</strong>
+                <span
+                  >Gunakan untuk project baru: metadata, sitemap, indexing
+                  readiness, and content publication plan.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Focus Lists</h3>
+            <div class="focus-list">
+              <div class="focus-item">
+                <strong>Keyword Research</strong>
+                <span
+                  >Find transactional keywords, cluster search intent, dan
+                  tentukan difficulty target.</span
+                >
+              </div>
+              <div class="focus-item">
+                <strong>Content Optimization</strong>
+                <span
+                  >Refresh title tags, improve content depth, dan perkuat
+                  semantic relevance setiap page.</span
+                >
+              </div>
+              <div class="focus-item">
+                <strong>Technical SEO</strong>
+                <span
+                  >Audit broken links, page speed, structured data, canonical,
+                  robots, dan index coverage.</span
+                >
+              </div>
+              <div class="focus-item">
+                <strong>Authority Building</strong>
+                <span
+                  >Track backlink outreach, partnerships, dan mentions yang
+                  berdampak pada ranking growth.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="board">
+        <div class="board-head">
+          <div>
+            <p class="eyebrow">SEO Todo Board</p>
+            <h2>Plan, execute, and close every ranking task</h2>
+            <p>
+              Tambahkan section baru atau masukkan todo SEO baru ke workflow
+              yang sudah ada.
+            </p>
+          </div>
+        </div>
+
+        <div class="input-cluster">
+          <input
+            id="taskInput"
+            placeholder="Add SEO task, example: Refresh meta title for landing page"
+          />
+          <select id="sectionSelect" aria-label="Choose section"></select>
+          <button class="btn-primary" onclick="addTask()">Add Task</button>
+        </div>
+
+        <div class="section-cluster">
+          <input
+            id="sectionInput"
+            placeholder="Add SEO section, example: Content Audit"
+          />
+          <button class="btn-secondary" onclick="addSection()">
+            Add Section
+          </button>
+        </div>
+
+        <div class="kanban" id="app"></div>
+      </section>
+    </main>
+
+    <script>
+      const storageKey = 'targetin-seo-board';
+      const defaultData = [
+        {
+          name: 'Keyword Research',
+          open: true,
+          tasks: [
+            {
+              text: 'Map primary keywords for service pages',
+              note: 'Prioritize keywords with commercial intent and realistic difficulty.',
+              done: false,
+            },
+            {
+              text: 'Group supporting long-tail queries into topic clusters',
+              note: 'Use one cluster for each landing page or article hub.',
+              done: true,
+            },
+          ],
+        },
+        {
+          name: 'Content Optimization',
+          open: true,
+          tasks: [
+            {
+              text: 'Update H1, title tag, and meta description for homepage',
+              note: 'Keep CTR angle strong while matching user intent.',
+              done: false,
+            },
+            {
+              text: 'Add FAQ section with schema to high-impression pages',
+              note: 'Support semantic coverage and enhance SERP visibility.',
+              done: false,
+            },
+          ],
+        },
+        {
+          name: 'Technical SEO',
+          open: true,
+          tasks: [
+            {
+              text: 'Audit broken internal links and redirect outdated URLs',
+              note: 'Review crawl path and clean orphan pages.',
+              done: false,
+            },
+            {
+              text: 'Validate sitemap, robots.txt, and canonical setup',
+              note: 'Make sure only target pages are indexable.',
+              done: true,
+            },
+          ],
+        },
+      ];
+
+      let data = JSON.parse(localStorage.getItem(storageKey)) || defaultData;
+
+      function save() {
+        localStorage.setItem(storageKey, JSON.stringify(data));
+      }
+
+      function render() {
+        const app = document.getElementById('app');
+        const select = document.getElementById('sectionSelect');
+        app.innerHTML = '';
+        select.innerHTML = '';
+
+        let total = 0;
+        let done = 0;
+
+        data.forEach((sectionData, sectionIndex) => {
+          select.innerHTML += `<option value="${sectionIndex}">${sectionData.name}</option>`;
+
+          const section = document.createElement('article');
+          section.className = 'section';
+
+          const completedInSection = sectionData.tasks.filter(
+            (task) => task.done,
+          ).length;
+
+          section.innerHTML = `
+            <div class="section-header" onclick="toggle(${sectionIndex})">
+              <div class="section-meta">
+                <div class="section-badge">${String(sectionIndex + 1).padStart(2, '0')}</div>
+                <div class="section-title">
+                  <strong>${sectionData.name}</strong>
+                  <span>${completedInSection}/${sectionData.tasks.length} completed SEO tasks</span>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="icon-btn" onclick="editSection(event, ${sectionIndex})" aria-label="Edit section">✎</button>
+                <button class="icon-btn" onclick="deleteSection(event, ${sectionIndex})" aria-label="Delete section">⌫</button>
+              </div>
+            </div>
+          `;
+
+          if (sectionData.open) {
+            const taskList = document.createElement('div');
+            taskList.className = 'task-list';
+
+            if (!sectionData.tasks.length) {
+              taskList.innerHTML =
+                '<div class="empty">No SEO tasks yet in this section.</div>';
+            }
+
+            sectionData.tasks.forEach((task, taskIndex) => {
+              total++;
+              if (task.done) done++;
+
+              const taskItem = document.createElement('div');
+              taskItem.className = `task${task.done ? ' done' : ''}`;
+              taskItem.innerHTML = `
+                <div class="task-main">
+                  <div class="task-check">${task.done ? '✓' : ''}</div>
+                  <div class="task-text" onclick="toggleTask(${sectionIndex}, ${taskIndex})">
+                    <strong>${task.text}</strong>
+                    <span>${task.note || 'SEO execution task ready to be completed.'}</span>
+                  </div>
+                </div>
+                <div class="actions">
+                  <button class="icon-btn" onclick="editTask(event, ${sectionIndex}, ${taskIndex})" aria-label="Edit task">✎</button>
+                  <button class="icon-btn" onclick="deleteTask(event, ${sectionIndex}, ${taskIndex})" aria-label="Delete task">⌫</button>
+                </div>
+              `;
+              taskList.appendChild(taskItem);
+            });
+
+            section.appendChild(taskList);
+          }
+
+          app.appendChild(section);
+        });
+
+        const progress = total ? Math.round((done / total) * 100) : 0;
+        document.getElementById('progress').style.width = `${progress}%`;
+        document.getElementById('progressLabel').textContent = `${progress}%`;
+        document.getElementById('statSections').textContent = data.length;
+        document.getElementById('statTasks').textContent = total;
+        document.getElementById('statDone').textContent = `${progress}%`;
+
+        save();
+      }
+
+      function addTask() {
+        const input = document.getElementById('taskInput');
+        const sec = document.getElementById('sectionSelect').value;
+        const text = input.value.trim();
+
+        if (!text || sec === '') return;
+
+        data[sec].tasks.push({
+          text,
+          note: 'New SEO todo added to the workflow.',
+          done: false,
+        });
+
+        input.value = '';
+        render();
+      }
+
+      function addSection() {
+        const input = document.getElementById('sectionInput');
+        const name = input.value.trim();
+        if (!name) return;
+
+        data.push({ name, open: true, tasks: [] });
+        input.value = '';
+        render();
+      }
+
+      function toggle(index) {
+        data[index].open = !data[index].open;
+        render();
+      }
+
+      function toggleTask(sectionIndex, taskIndex) {
+        data[sectionIndex].tasks[taskIndex].done =
+          !data[sectionIndex].tasks[taskIndex].done;
+        render();
+      }
+
+      function deleteTask(event, sectionIndex, taskIndex) {
+        event.stopPropagation();
+        data[sectionIndex].tasks.splice(taskIndex, 1);
+        render();
+      }
+
+      function deleteSection(event, sectionIndex) {
+        event.stopPropagation();
+        data.splice(sectionIndex, 1);
+        render();
+      }
+
+      function editTask(event, sectionIndex, taskIndex) {
+        event.stopPropagation();
+        const current = data[sectionIndex].tasks[taskIndex];
+        const text = prompt('Edit SEO task:', current.text);
+        if (text && text.trim()) {
+          current.text = text.trim();
+          render();
+        }
+      }
+
+      function editSection(event, sectionIndex) {
+        event.stopPropagation();
+        const name = prompt('Edit SEO section:', data[sectionIndex].name);
+        if (name && name.trim()) {
+          data[sectionIndex].name = name.trim();
+          render();
+        }
+      }
+
+      render();
+    </script>
+  </body>
+</html>
